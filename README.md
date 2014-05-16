@@ -1,6 +1,33 @@
 PRFLR.SDK.PHP
 =============
 
+PHP
+=============
+
+Пример использования:
+```php
+<?php
+
+include('./prflr.php');
+
+// configure profiler
+//  выставляем источник таймеров (имя сервера к примеру)  и прописываем API ключ 
+PRFLR::init('11msHost', 'YourApiKey');
+
+PRFLR::Begin('checkUDP');  //стартуем таймер чтобы понять продолжительность цикла целиком
+for ($i = 0; $i < 100; $i++) {
+//start timer
+    $r = rand(1,9);
+    PRFLR::Begin('test.timer'.$r); // стартуем таймер в цикле
+    sleep(1);
+    PRFLR::End('test.timer'.$r, "step {$i}");
+}
+PRFLR::End('checkUDP', $i);  //завершаем таймер и щаодно информируем сколько было шакгов в цикле 
+?>
+```
+
+
+
 
 Yii Framework
 =============
