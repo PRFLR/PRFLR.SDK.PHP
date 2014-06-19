@@ -12,7 +12,7 @@ class PRFLRLogRoute extends CLogRoute
 {
     public $apikey;
     public $source;
-    public $category = 'nyrby_ss_v3';
+    public $category = 'CONFIGURE_YOUR_CATEGORY_HERE';
     public $active = false;
 
 
