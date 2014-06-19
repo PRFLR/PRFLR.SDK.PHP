@@ -42,23 +42,28 @@ class PRFLRSender
     public $port = 4000;
     public $apikey;
 
-    public function __construct() {
-        try {
-            $this->ip = gethostbyname("prflr.org");
-        } catch (Exception $e) {
-            $this->ip = "128.0.0.1";
-        }
+    public function __construct()
+    {
+	$host = "prflr.morg";
+	$this->ip = gethostbyname($host);
+	if ($this->ip == $host || ip2long($this->ip) == -1 || ($this->ip == gethostbyaddr($this->ip) && preg_match("/.*\.[a-zA-Z]{2,3}$/", $host) == 0) ) {
+	    throw new Exception('PRFLR DNS lookup failed');
+ 	}
+	
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         socket_close($this->socket);
     }
 
-    public function Begin($timer) {
+    public function Begin($timer)
+    {
         $this->timers[$timer] = microtime(true);
     }
 
-    public function End($timer, $info = '') {
+    public function End($timer, $info = '')
+    {
 
         if (!isset($this->timers[$timer]))
             return false;
@@ -70,7 +75,14 @@ class PRFLRSender
         unset($this->timers[$timer]);
     }
 
-    private function send($timer, $time, $info = '') {
+    private function send($timer, $time, $info = '')
+    {
+	if (empty($this->socket)) {
+	    throw new Exception("Socket is inavlid or does not exist");
+	}
+	if (empty($this->ip)) {
+	    throw new Exception("IP is not set, quitting");
+	}
 
         // format the message
         $message = join(array(
@@ -80,14 +92,8 @@ class PRFLRSender
             $time,
             substr($info, 0, 32),
             $this->apikey,
-                ), '|');
+        ), '|');
 
-        if ($this->socket) {
-            try {
-                socket_sendto($this->socket, $message, strlen($message), 0, $this->ip, $this->port);
-            } catch (Exception $e) {    }
-        } else {
-            throw new Exception("Socket not exist\n");
-        }
+	socket_sendto($this->socket, $message, strlen($message), 0, $this->ip, $this->port);
     }
 }
