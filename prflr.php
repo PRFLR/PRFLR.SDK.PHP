@@ -43,7 +43,11 @@ class PRFLRSender
     public $apikey;
 
     public function __construct() {
-        $this->ip = gethostbyname("prflr.org");
+        try {
+            $this->ip = gethostbyname("prflr.org");
+        } catch (Exception $e) {
+            $this->ip = "128.0.0.1";
+        }
     }
 
     public function __destruct() {
@@ -79,7 +83,9 @@ class PRFLRSender
                 ), '|');
 
         if ($this->socket) {
-            socket_sendto($this->socket, $message, strlen($message), 0, $this->ip, $this->port);
+            try {
+                socket_sendto($this->socket, $message, strlen($message), 0, $this->ip, $this->port);
+            } catch (Exception $e) {    }
         } else {
             throw new Exception("Socket not exist\n");
         }
