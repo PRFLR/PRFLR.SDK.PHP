@@ -44,7 +44,7 @@ class PRFLRSender
 
     public function __construct()
     {
-	$host = "prflr.morg";
+	$host = "prflr.org";
 	$this->ip = gethostbyname($host);
 	if ($this->ip == $host || ip2long($this->ip) == -1 || ($this->ip == gethostbyaddr($this->ip) && preg_match("/.*\.[a-zA-Z]{2,3}$/", $host) == 0) ) {
 	    throw new Exception('PRFLR DNS lookup failed');
