@@ -5,16 +5,11 @@ class PRFLR
     private static $sender;
 
     public static function init($source, $apikey) {
-        self::$sender = new PRFLRSender();
-
-        if (!self::$sender->apikey = substr($apikey, 0, 32))
-            throw new Exception('Unknown apikey.');
-
+        self::$sender = new PRFLRSender($apikey);
         if (!self::$sender->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
             throw new Exception('Can\'t open socket.');
-
         self::$sender->source = substr($source, 0, 32);
-        self::$sender->thread = getmypid().".".uniqid(); //because no threads in PHP
+        self::$sender->thread = getmypid().".".uniqid();
     }
 
     public static function begin($timer) {
@@ -33,23 +28,26 @@ class PRFLR
 
 class PRFLRSender
 {
-    private $timers;
     public $socket;
     public $delayedSend = false;
     public $source;
     public $thread;
-    public $ip;
-    public $port = 4000;
-    public $apikey;
-
-    public function __construct()
+    private $ip;
+    private $port;
+    private $key;
+    private $timers;
+    
+    public function __construct($ak)
     {
-	$host = "prflr.org";
-	$this->ip = gethostbyname($host);
-	if ($this->ip == $host || ip2long($this->ip) == -1 || ($this->ip == gethostbyaddr($this->ip) && preg_match("/.*\.[a-zA-Z]{2,3}$/", $host) == 0) ) {
+    	$scheme = parse_url($apikey);
+    	$key =  $scheme['user'];
+    	$port = $scheme['port'];
+    	if (!isset($scheme['user']) || !isset($scheme['port']) || !isset($scheme['host'])) throw new Exception('PRFLR ApiKey wrong or empty');
+
+	$this->ip = gethostbyname($scheme['host']);
+	if ($this->ip == $scheme['host'] || ip2long($this->ip) == -1 || ($this->ip == gethostbyaddr($this->ip) && preg_match("/.*\.[a-zA-Z]{2,3}$/", $scheme['host']) == 0) ) {
 	    throw new Exception('PRFLR DNS lookup failed');
  	}
-	
     }
 
     public function __destruct()
