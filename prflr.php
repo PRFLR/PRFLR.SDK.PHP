@@ -37,7 +37,7 @@ class PRFLRSender
     private $key;
     private $timers;
     
-    public function __construct($ak)
+    public function __construct($apikey)
     {
     	$scheme = parse_url($apikey);
     	$key =  $scheme['user'];
